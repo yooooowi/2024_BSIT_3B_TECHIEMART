@@ -14,6 +14,15 @@ if(isset($_SESSION['cart_items'])) {
     $cartItems = [];
 }
 
+// Check if the user is logged in
+if(!isset($_SESSION['user_id'])) {
+    // Redirect the user to the login page if they are not logged in
+    header("Location: login.php");
+    exit;
+}
+
+$user_id = $_SESSION['user_id'];
+
 ?>
 
 <!DOCTYPE html>
@@ -25,53 +34,6 @@ if(isset($_SESSION['cart_items'])) {
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f7f7f7;
-            margin: 0;
-            padding: 0;
-        }
-
-        .header {
-            background-color: #333;
-            color: #fff;
-            padding: 10px 0;
-            text-align: center;
-        }
-
-        .container-shop {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        .logo {
-            width: 150px;
-            height: auto;
-        }
-
-        .navbar-shop {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .navbar-shop ul {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-        }
-
-        .navbar-shop ul li {
-            display: inline;
-            margin-left: 20px;
-        }
-
-        .navbar-shop ul li a {
-            color: #fff;
-            text-decoration: none;
-        }
-
         .orders-container {
             max-width: 800px;
             margin: 20px auto;
@@ -144,53 +106,6 @@ if(isset($_SESSION['cart_items'])) {
         .orders-container .payment-options button:hover {
             background-color: #555;
         }
-
-        footer {
-            background-color: #333;
-            color: #fff;
-            padding: 20px 0;
-            text-align: center;
-        }
-
-        .footer-content {
-            margin-bottom: 20px;
-        }
-
-        .footer-content h3 {
-            margin-bottom: 10px;
-            color: #fff;
-        }
-
-        .list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .list li {
-            margin-bottom: 5px;
-        }
-
-        .social-icons {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .social-icons li {
-            display: inline-block;
-            margin-right: 10px;
-        }
-
-        .social-icons li a {
-            color: #fff;
-        }
-
-        .bottom-bar {
-            background-color: #222;
-            padding: 10px 0;
-            text-align: center;
-        }
     </style>
 </head>
 <body>
@@ -212,43 +127,37 @@ if(isset($_SESSION['cart_items'])) {
         <h1>Orders</h1>
         <div class="cart-items">
             <?php if(!empty($cartItems)): ?>
-                <h2>Items in Your Cart:</h2>
                 <ul>
                     <?php foreach($cartItems as $item): ?>
                         <li>
                             <img src="<?php echo $item['image']; ?>" alt="<?php echo $item['name']; ?>">
-                            <p>Name: <?php echo $item['name']; ?></p>
-                            <p>Price: <?php echo $item['price']; ?></p>
-                            <p>Quantity: <?php echo $item['quantity']; ?></p>
+                            <p><?php echo $item['name']; ?> - Quantity: <?php echo $item['quantity']; ?> - Price: $<?php echo $item['price']; ?></p>
                         </li>
                     <?php endforeach; ?>
                 </ul>
-                <h3>Total Cost: 
-                    <?php 
-                        $total = 0;
-                        foreach($cartItems as $item) {
-                            $total += $item['price'] * $item['quantity'];
-                        }
-                        echo '$' . number_format($total, 2);
-                    ?>
-                </h3>
             <?php else: ?>
                 <p>No items in your cart.</p>
             <?php endif; ?>
         </div>
         
         <div class="payment-options">
-            <h2>Choose Payment Method:</h2>
-            <form action="order_confirmation.php" method="post">
-                <label for="payment">Select Payment Method:</label>
-                <select name="payment" id="payment">
-                    <option value="cash_on_delivery">Cash on Delivery</option>
-                    <option value="gcash">GCash</option>
-                </select>
-                <label for="phone">Phone Number (for GCash):</label>
-                <input type="text" name="phone" id="phone">
-                <button type="submit">Submit Order</button>
-            </form>
+            <h2>Payment Options</h2>
+            <form method="POST" action="order_process.php">
+    <!-- Add a hidden input field to store the user_id -->
+    <input type="hidden" name="user_id" value="<?php echo $user_id; ?>">
+
+    <label for="payment">Select Payment Method:</label>
+    <select name="payment" id="payment" required>
+        <option value="Credit Card">Credit Card</option>
+        <option value="PayPal">PayPal</option>
+        <option value="Cash on Delivery">Cash on Delivery</option>
+    </select>
+    
+    <label for="phone">Phone Number:</label>
+    <input type="tel" name="phone" id="phone" placeholder="Enter your phone number" required>
+
+    <button type="submit">Submit Order</button>
+</form>
         </div>
     </div>
 
@@ -288,4 +197,3 @@ if(isset($_SESSION['cart_items'])) {
     </footer>
 </body>
 </html>
-

@@ -1,50 +1,48 @@
-<?php
-include 'config.php';
-session_start();
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if(isset($_SESSION['cart_items']) && !empty($_SESSION['cart_items'])) {
-        // Extract user_id from session or any other source
-        $user_id = 1; // Assuming user_id is 1 for demonstration purposes
-
-        // Prepare and bind SQL statement
-        $stmt = $conn->prepare("INSERT INTO `order` (user_id, item_name, quantity, date_added, total_price) VALUES (?, ?, ?, NOW(), ?)");
-        $stmt->bind_param("isis", $user_id, $item_name, $quantity, $total_price);
-
-        // Insert each item from the session into the database
-        foreach ($_SESSION['cart_items'] as $item) {
-            $item_name = $item['name'];
-            $quantity = $item['quantity'];
-            $total_price = $item['price'] * $quantity;
-            $stmt->execute();
-        }
-
-        // Close statement
-        $stmt->close();
-
-        // Clear the cart after placing the order
-        unset($_SESSION['cart_items']);
-
-        // Redirect to a confirmation page
-        header("Location: order_confirmation.php");
-        exit();
-    } else {
-        // If cart is empty, redirect back to shop page or show an error message
-        header("Location: shop.php");
-        exit();
-    }
-} else {
-    // If someone tries to access this page directly without submitting the form, redirect to shop page
-    header("Location: shop.php");
-    exit();
-}
-?>
-
 <!DOCTYPE html>
-<html> 
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .confirmation-message {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 60vh;
+            text-align: center;
+        }
+
+        .confirmation-message h1 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .confirmation-message p {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .confirmation-message .btn {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+
+        .confirmation-message .btn:hover {
+            background-color: #555;
+        }
+    </style>
 </head>
 <body>
     <section class="header">
@@ -60,12 +58,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
         </div>
     </section>
+    
     <div class="confirmation-message">
         <h1>Your order has been processed!</h1>
         <p>Thank you for shopping with us.</p>
         <a href="track_orders.php" class="btn">Track Orders</a>
     </div>
-    <!----------footer--------->
+
+    <!-- Footer section -->
     <footer>
         <section class="footer">
             <div class="container">
