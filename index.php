@@ -7,6 +7,7 @@
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     </head>
     <body>
+    
         <section class="header">
             <div class="banner">
                 <div class="navbar">
@@ -14,7 +15,7 @@
                     <ul>
                         <li><a href="index.php">HOME</a></li>
                         <li><a href="shop.php">SHOP</a></li>
-                        <li><a href="#">ORDERS</a></li>
+                        <li><a href="track_orders.php">TRACK ORDERS</a></li>
                         <li class="tooltip-container"><a href="login.php"><i class="fa-solid fa-user"></i><span class="tooltip">Sign In</span></a></li>
                     </ul>
                 </div>
@@ -32,6 +33,7 @@
             </div>
 
         </section>
+    
 <!--------features------->
         <section class="features">
             <h1>Features</h1>
